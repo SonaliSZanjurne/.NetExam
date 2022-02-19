@@ -1,0 +1,29 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+
+namespace ProductDetails.Models
+{
+    public class Product
+    {
+        [Key]
+        public int ProductId { get; set; }
+
+        [DataType(DataType.Text)]
+        [Required(ErrorMessage = "Please Enter Name")]
+        public string ProductName { get; set; }
+
+        [Required(ErrorMessage = "Please Enter rate of product")]
+        public decimal Rate { get; set; }
+
+        [DataType(DataType.Text)]
+        [Required(ErrorMessage = "Please Enter description of product")]
+        public string Description { get; set; }
+
+        [DataType(DataType.Text)]
+        [Required(ErrorMessage = "Please Enter Category of product")]
+        public string CategoryName { get; set; }
+    }
+}

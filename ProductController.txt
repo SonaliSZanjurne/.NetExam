@@ -1,0 +1,165 @@
+using ProductDetails.Models;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace ProductDetails.Controllers
+{
+    public class ProductController : Controller
+    {
+        // GET: Product
+        public ActionResult Index()
+        {
+            List<Product> list = new List<Product>();
+
+            SqlConnection cn = new SqlConnection();
+            cn.ConnectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=JKJan2022;Integrated Security=True;";
+            //Data Source=(localdb)\ProjectsV13;Initial Catalog=JKJan2022;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+            cn.Open();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = cn;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "ShowDetails";
+            //Data Source=Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+            try
+            {
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    list.Add(new Product { ProductId = (int)dr["ProductId"], ProductName = dr["Productname"].ToString(), Rate = dr.GetDecimal(2), Description = dr["Description"].ToString(), CategoryName = dr["CategoryName"].ToString()});
+                }
+                dr.Close();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+            }
+            cn.Close();
+            return View(list);
+           
+        }
+
+        // GET: Product/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
+        }
+
+        // GET: Product/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Product/Create
+        [HttpPost]
+        public ActionResult Create(FormCollection collection)
+        {
+            try
+            {
+                // TODO: Add insert logic here
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Product/Edit/5
+        public ActionResult Edit(int id = 0)
+        {
+            SqlConnection cn = new SqlConnection();
+            cn.ConnectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=JKJan2022;Integrated Security=True;";
+            //Data Source=(localdb)\ProjectsV13;Initial Catalog=JKJan2022;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+            cn.Open();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = cn;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "EditProduct";
+
+            Product obj = null;
+            try
+            {
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
+                { 
+                
+                    obj = new Product { ProductId = (int)dr["ProductId"], ProductName = dr["Productname"].ToString(), Rate = dr.GetDecimal(2), Description = dr["Description"].ToString(), CategoryName = dr["CategoryName"].ToString() };
+                }
+                   dr.Close();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                cn.Close();
+            }
+
+            return View(obj);
+        }
+
+        // POST: Product/Edit/5
+        [HttpPost]
+        public ActionResult Edit(int? id, Product obj = null)
+        {
+            SqlConnection cn = new SqlConnection();
+            cn.ConnectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=JKJan2022;Integrated Security=True;";
+            //Data Source=(localdb)\ProjectsV13;Initial Catalog=JKJan2022;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+            cn.Open();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = cn;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "UpdateProduct";
+
+            cmd.Parameters.AddWithValue("ProductName", obj.ProductName);
+            cmd.Parameters.AddWithValue("Rate", obj.Rate);
+            cmd.Parameters.AddWithValue("Description", obj.Description);
+            cmd.Parameters.AddWithValue("CatrgoryName", obj.CategoryName);
+            try
+            {
+                cmd.ExecuteNonQuery();
+                return RedirectToAction("Index");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            finally
+            {
+                cn.Close();
+            }
+            return View(obj);
+        }
+
+        // GET: Product/Delete/5
+        public ActionResult Delete(int id)
+        {
+            return View();
+        }
+
+        // POST: Product/Delete/5
+        [HttpPost]
+        public ActionResult Delete(int id, FormCollection collection)
+        {
+            try
+            {
+                // TODO: Add delete logic here
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+    }
+}
